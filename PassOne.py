@@ -17,46 +17,41 @@ sym = {}
 error=[]
 littab = {}
  
-#  SIC opcodes
-optab = {
-    "ADD": "3",
-    "AND": "3",
-    "COMP": "3",
-    "DIV": "3",
-    "J": "3",
-    "JEQ": "3",
-    "JGT": "3",
-    "JLT": "3",
-    "JSUB": "3",
-    "LDA": "3",
-    "LDCH": "3",
-    "LDL": "3",
-    "LDX": "3",
-    "MUL": "3",
-    "OR": "3",
-    "RD": "3",
-    "RSUB": "3",
-    "STA": "3",
-    "STCH": "3",
-    "STL": "3",
-    "STX": "3",
-    "SUB": "3",
-    "TD": "3",
-    "TIX": "3",
-    "WD": "3",
-    "BYTE": "1",
-    "WORD": "3",
-    "RESB": "0",
-    "RESW": "0",
-    "START": "0",
-    "END": "0"
-}
 
+
+optab = {
+    "ADD":"18",
+    "AND":"40",
+    "COMP":"28",
+    "DIV":"24",
+    "J":"3C",
+    "JEQ":"30",
+    "JGT":"34",
+    "JLT":"38",
+    "JSUB":"48",
+    "LDA":"00",
+    "LDCH":"50",
+    "LDL":"08",
+    "LDX":"04",
+    "MUL":"20",
+    "OR":"44",
+    "RD":"D8",
+    "RSUB":"4C",
+    "STA":"0C",
+    "STCH":"54",
+    "STL":"14",
+    "STSW":"E8",
+    "STX":"10",
+    "SUB":"1C",
+    "TD":"E0",
+    "TIX":"2C",
+    "WD":"DC"}
+LOCCTR=0
 #READING FIRST LINE
 first = inp.readline()
 if first[11:20].strip() == "START":
         LOCCTR =first[21:38].strip()
-        start1 = LOCCTR    
+        start1 = LOCCTR
         start =int(LOCCTR,16)
         PN=first[0:10].strip()
         out.write(LOCCTR+" "*6+first[0:38])
@@ -64,43 +59,43 @@ else:
     LOCCTR=0
 
 for i in inp.readlines():
-   
+
     n = i
     string=n[40:70]#to remove comments
     if (n[11:20].strip()!='END'):
         print(n[11:20].strip())
         if n[0]!='.':
-            
-            
+
+
             if len(string) == 0:
-                if(n[11:20].strip() == "LTORG"): 
+                if(n[11:20].strip() == "LTORG"):
                     out.write(" "*10+n)
 
                 else:
                    out.write(LOCCTR+" "*6+n)
-               
+
             else:
-                if(n[11:20].strip() == "LTORG"): 
+                if(n[11:20].strip() == "LTORG"):
                     out.write(" "*10+n)
 
                 else:
                     out.write(LOCCTR+" "*6+n[0:38]+"\n")
-                
+
 
             if n[0:10].strip()!="":
                 if n[0:10].strip() in sym:
 
                     print("error:duplicate symbol : "+n[0:10].strip())
                     error.append("error:duplicate symbol : "+n[0:10].strip())
-                    
+
                 else:
                     space=18-len(n[0:10].strip())
                     symtab.write(n[0:10].strip()+" "*space+LOCCTR+"\n")
-                    
+
                     sym[n[0:10].strip()] = LOCCTR
-                    
+
             if n[11:19].strip() in optab.keys() or n[11:19].strip()=="WORD":
-              LOCCTR = str(hex(int(LOCCTR,16)+(3)))[2:] 
+              LOCCTR = str(hex(int(LOCCTR,16)+(3)))[2:]
             elif n[11:19].strip()=="RESW":
               temp = int(n[21:38].strip())
               LOCCTR = str(hex(int(LOCCTR,16)+(temp)*3))[2:]
@@ -111,33 +106,33 @@ for i in inp.readlines():
                 LOCCTR = str(hex(int(LOCCTR,16)+int((len(n[21:38].strip())-3)/2)))[2:]
               elif n[21:38].strip()[0]=="C":
                 LOCCTR = str(hex(int(LOCCTR,16)+int((len(n[21:38].strip())-3))))[2:]
-        
+
             elif n[11:19].strip()=="LTORG":
                 for i in littab:
                     space=18-len(i)
                     out.write(LOCCTR+" "*6+"*"+" "*10+i+"\n")
                     symtab.write(i+" "*space+LOCCTR+"\n")
                     sym[i] = LOCCTR
-                    
+
                     LOCCTR=str(hex(int(LOCCTR,16)+int(littab[i][0])))[2:]
-                littab={} 
-         
+                littab={}
+
 
 
             if n[21:22] == '=':
                 literal = n[21:38].strip()
                 if literal[1]== 'X':
                      hexco = literal[3:-1]
-                     
+
                      if literal not in littab:
                         littab[literal]=[len(hexco)/2]
                 elif  literal[1]=='C':
                      hexco = literal[3:-1]
-                     
+
                      if literal not in littab:
                         littab[literal]=[len(hexco)]
                 else:
-                    print("ُERROR: NOT Valid Literal : "+literal) 
+                    print("ُERROR: NOT Valid Literal : "+literal)
                     error.append("ُERROR: NOT Valid Literal : "+literal)
     else:
         out.write(" "*10+n+'\n')
@@ -147,15 +142,15 @@ for i in inp.readlines():
                 out.write(LOCCTR+" "*6+"*"+" "*10+i+"\n")
                 symtab.write(i+" "*space+LOCCTR+"\n")
                 sym[i] = LOCCTR
-                    
+
                 LOCCTR=str(hex(int(LOCCTR,16)+int(littab[i][0])))[2:]
         else:
             print("error: invalid opcdce"+ n[11:19].strip())
             error.append("error: invalid opcdce : "+ n[11:19].strip())
             break
-        
-    
-             
+
+
+
 inp.close()
 out.close()
 symtab.close()
@@ -164,11 +159,9 @@ lastaddress=LOCCTR
 programLength = int(lastaddress,16) - start
 proglen = hex(int(programLength))[2:]
 
-print("program name is : "+PN+"\n"+"pogram length: "+proglen+'\n')      
+print("program name is : "+PN+"\n"+"pogram length: "+proglen+'\n')
 for i in sym:
-    print(i+"  "+sym[i]+"\n")        
-    
- 
+    print(i+"  "+sym[i]+"\n")
 
 
 root =Tk()

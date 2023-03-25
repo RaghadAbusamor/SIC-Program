@@ -9,8 +9,8 @@ ZERO              1037
 RETADR            103a
 LENGTH            103d
 BUFFER            1040
-RDREC             1043
-RLOOP             104c
-EXIT              1064
-INPUT             1067
-=X'F2'            1070
+RDREC             2040
+RLOOP             2049
+EXIT              2061
+INPUT             2064
+=X'F2'            206b
